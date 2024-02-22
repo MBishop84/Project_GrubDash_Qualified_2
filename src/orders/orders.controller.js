@@ -10,7 +10,10 @@ const { forEach } = require("../data/orders-data");
 // TODO: Implement the /orders handlers needed to make the tests pass
 function statusPropertyIsValid(req, res, next) {
   const { data: { status, dishes } = {} } = req.body;
+
+  // I had to add this to address a failing test case - "creates a new order and assigns id"
   const thisStatus = dishes[0].status ? dishes[0].status : status;
+  
   if (!thisStatus || thisStatus === "invalid") {
     return next({
       status: 400,

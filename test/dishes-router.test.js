@@ -535,7 +535,7 @@ describe("dishes router", () => {
         name: "Century Eggs",
         description: "Whole eggs preserved in clay and ash for a few months",
         image_url: "some-valid-url",
-        price: "D",
+        price: "17",
       };
 
       dishes.push(original);

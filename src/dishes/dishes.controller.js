@@ -9,7 +9,8 @@ const nextId = require("../utils/nextId");
 // TODO: Implement the /dishes handlers needed to make the tests pass
 function pricePropertyIsValid(req, res, next) {
     const { data: { price } = {} } = req.body;
-    if (price > 0 && price != 17) {
+
+    if (price > 0 && typeof price === "number") {
         return next();
     }
     next({
