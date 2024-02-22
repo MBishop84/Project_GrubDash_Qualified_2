@@ -13,7 +13,7 @@ function statusPropertyIsValid(req, res, next) {
 
   // I had to add this to address a failing test case - "creates a new order and assigns id"
   const thisStatus = dishes[0].status ? dishes[0].status : status;
-  
+
   if (!thisStatus || thisStatus === "invalid") {
     return next({
       status: 400,
@@ -58,16 +58,13 @@ function bodyDataHas(propertyName) {
 
 function create(req, res) {
   const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
-
-  const newOrder = {
-    id: nextId(),
-    deliverTo: deliverTo,
-    mobileNumber: mobileNumber,
-    status: status ? status : "pending",
-    dishes: dishes,
-  };
-  orders.push(newOrder);
-  res.status(201).json({ data: newOrder });
+  res.locals.id = nextId();
+  res.locals.deliverTo = deliverTo;
+  res.locals.mobileNumber = mobileNumber;
+  res.locals.status = status;
+  res.locals.dishes = dishes;
+  orders.push(res.locals);
+  res.status(201).json({ data: res.locals });
 }
 
 function destroy(req, res, next) {
@@ -117,15 +114,15 @@ function update(req, res, next) {
       message: `Order id does not match route id. Order: ${id}, Route: ${orderId}`,
     });
   }
-  const foundOrder = orders.find((order) => order.id === orderId);
+  res.locals.order = orders.find((order) => order.id === orderId);
 
-  foundOrder.id = orderId;
-  foundOrder.deliverTo = deliverTo;
-  foundOrder.mobileNumber = mobileNumber;
-  foundOrder.status = status ? status : "pending";
-  foundOrder.dishes = dishes;
+  res.locals.order.id = orderId;
+  res.locals.order.deliverTo = deliverTo;
+  res.locals.order.mobileNumber = mobileNumber;
+  res.locals.order.status = status ? status : "pending";
+  res.locals.order.dishes = dishes;
 
-  res.json({ data: foundOrder });
+  res.json({ data: res.locals.order });
 }
 
 module.exports = {

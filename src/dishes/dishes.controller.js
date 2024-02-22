@@ -9,7 +9,6 @@ const nextId = require("../utils/nextId");
 // TODO: Implement the /dishes handlers needed to make the tests pass
 function pricePropertyIsValid(req, res, next) {
     const { data: { price } = {} } = req.body;
-
     if (price > 0 && typeof price === "number") {
         return next();
     }
@@ -21,15 +20,13 @@ function pricePropertyIsValid(req, res, next) {
 
 function create(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
-  const newDish = {
-    id: nextId(),
-    name: name,
-    description: description,
-    price: price,
-    image_url: image_url,
-  };
-  dishes.push(newDish);
-  res.status(201).json({ data: newDish });
+  res.locals.id = nextId();
+  res.locals.name = name;
+  res.locals.description = description;
+  res.locals.price = price;
+  res.locals.image_url = image_url;
+  dishes.push(res.locals);
+  res.status(201).json({ data: res.locals });
 }
 
 function bodyDataHas(propertyName) {
@@ -73,15 +70,15 @@ function update(req, res, next) {
       message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}`,
     });
   }
-  const foundDish = dishes.find((dish) => dish.id === dishId);
+  res.locals.dish = dishes.find((dish) => dish.id === dishId);
 
-  foundDish.id = dishId;
-  foundDish.name = name;
-  foundDish.description = description;
-  foundDish.price = price;
-  foundDish.image_url = image_url;
+  res.locals.dish.id = dishId;
+  res.locals.dish.name = name;
+  res.locals.dish.description = description;
+  res.locals.dish.price = price;
+  res.locals.dish.image_url = image_url;
 
-  res.json({ data: foundDish });
+  res.json({ data: res.locals.dish });
 }
 
 module.exports = {
